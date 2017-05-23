@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+
+    <style type="text/css">
+        table.gridtable {
+            font-family: verdana,arial,sans-serif;
+            font-size: 11px;
+            color: #333333;
+            border-width: 1px;
+            border-color: #666666;
+            border-collapse: collapse;
+        }
+
+            table.gridtable th {
+                border-width: 1px;
+                padding: 8px;
+                border-style: solid;
+                border-color: #666666;
+                background-color: #dedede;
+            }
+
+            table.gridtable td {
+                border-width: 1px;
+                padding: 8px;
+                border-style: solid;
+                border-color: #666666;
+                background-color: #ffffff;
+            }
+    </style>
+
+    <script>
+        var makeHtmlRow = function (rowData) {
+            var rowHtml = '<tr>';
+            rowHtml += '<td>' + rowData.BUILDING_NAME + '</td>';
+            rowHtml += '<td>' + rowData.FLAT_NUMBER + '</td>';
+            rowHtml += '<td>' + rowData.FLAT_NUMBER_PREFIX + '</td>';
+            rowHtml += '<td>' + rowData.FLAT_NUMBER_SUFFIX + '</td>';
+            rowHtml += '<td>' + rowData.FLAT_TYPE + '</td>';
+            rowHtml += '<td>' + rowData.LEVEL_NUMBER + '</td>';
+            rowHtml += '<td>' + rowData.LEVEL_NUMBER_PREFIX + '</td>';
+            rowHtml += '<td>' + rowData.LEVEL_NUMBER_SUFFIX + '</td>';
+            rowHtml += '<td>' + rowData.LEVEL_TYPE + '</td>';
+            rowHtml += '<td>' + rowData.LOCALITY_NAME + '</td>';
+            rowHtml += '<td>' + rowData.LOT_NUMBER + '</td>';
+            rowHtml += '<td>' + rowData.LOT_NUMBER_PREFIX + '</td>';
+            rowHtml += '<td>' + rowData.LOT_NUMBER_SUFFIX + '</td>';
+            rowHtml += '<td>' + rowData.NUMBER_FIRST + '</td>';
+            rowHtml += '<td>' + rowData.NUMBER_FIRST_PREFIX + '</td>';
+            rowHtml += '<td>' + rowData.NUMBER_FIRST_SUFFIX + '</td>';
+            rowHtml += '<td>' + rowData.NUMBER_LAST + '</td>';
+            rowHtml += '<td>' + rowData.NUMBER_LAST_PREFIX + '</td>';
+            rowHtml += '<td>' + rowData.NUMBER_LAST_SUFFIX + '</td>';
+            rowHtml += '<td>' + rowData.POSTCODE + '</td>';
+            rowHtml += '<td>' + rowData.STREET_NAME + '</td>';
+            rowHtml += '<td>' + rowData.STREET_SUFFIX_TYPE + '</td>';
+            rowHtml += '<td>' + rowData.STREET_TYPE_CODE + '</td>';
+            rowHtml += '</tr>';
+            return rowHtml;
+        };
+
+        var getResults = function () {
+            var postcode = document.getElementById("postcode").value;
+            var locality = document.getElementById("locality").value;
+            var address = document.getElementById("address").value;
+
+            if (postcode == '' || locality == '' || address == '') {
+                return;
+            }
+
+            $.ajax({
+                method: 'GET',
+                url: 'http://localhost:49242/api/AddressSearch/FilterAddress/?postcode=' + postcode + '&locality=' + locality + '&address=' + address
+            })
+              .done(function (response) {
+
+                  var htmlTable = '<tr><td>BUILDING_NAME</td><td>FLAT_NUMBER</td><td>FLAT_NUMBER_PREFIX</td><td>FLAT_NUMBER_SUFFIX</td><td>FLAT_TYPE</td><td>LEVEL_NUMBER</td><td>LEVEL_NUMBER_PREFIX</td><td>LEVEL_NUMBER_SUFFIX</td><td>LEVEL_TYPE</td><td>LOCALITY_NAME</td><td>LOT_NUMBER</td><td>LOT_NUMBER_PREFIX</td><td>LOT_NUMBER_SUFFIX</td><td>NUMBER_FIRST</td><td>NUMBER_FIRST_PREFIX</td><td>NUMBER_FIRST_SUFFIX</td><td>NUMBER_LAST</td><td>NUMBER_LAST_PREFIX</td><td>NUMBER_LAST_SUFFIX</td><td>POSTCODE</td><td>STREET_NAME</td><td>STREET_SUFFIX_TYPE</td><td>STREET_TYPE_CODE</td></tr>';
+
+                  for (var i = 0; i < response.length; i++) {
+                      htmlTable += makeHtmlRow(response[i]);
+                  }
+
+                  //document.getElementById("test").innerHTML = JSON.stringify(response, undefined, 4);
+                  document.getElementById("test").innerHTML = htmlTable;
+              });
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Testing purposes only</h2>
+        <div>
+            <form>
+                <label for="postcode">Postcode</label>
+                <input type="text" id="postcode" name="postcode" value="">
+                <br><br>
+
+                <label for="locality">Suburb</label>
+                <input type="text" id="locality" name="locality" value="">
+                <br><br>
+
+                <label for="address">Address</label>
+                <input type="text" id="address" name="address" value="">
+                <br><br>
+
+                <input type="button" value="Search" onclick="getResults()">
+            </form>
+        </div>
+        <br><br>
+        <div class="row">
+            <table id="test" border="1" class="gridtable"></table>
+        </div>
+    </div>
+</body>
+</html>
